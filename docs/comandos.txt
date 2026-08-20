@@ -1,0 +1,8 @@
+Proyecto Aeropuerto - Backend
+GET /api/flights/
+GET /api/flights/9/
+POST /api/flights/
+DELETE /api/flights/4/
+INFO: flight created successfully
+INFO: flight service running
+WARN: flight delay detected

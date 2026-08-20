@@ -218,10 +218,10 @@ Este documento contiene la guia paso a paso y los comandos para Ubuntu para gene
 # SECCION 3: BACKEND – DJANGO REST
 
 ### Captura 15 – Creacion del Proyecto y Aplicacion
-* **Objetivo:** Mostrar en la terminal de Ubuntu la estructura de directorios del proyecto Django (`airport_api`) y la app (`gestion`).
+* **Objetivo:** Mostrar en la terminal de Ubuntu la estructura de directorios del proyecto Django (`backend`) y la app (`gestion`).
 * **Comandos en la terminal de Ubuntu:**
   ```bash
-  cd airport_api
+  cd backend
   tree -L 2 .
   ls -la gestion/
   ```
@@ -278,7 +278,7 @@ Este documento contiene la guia paso a paso y los comandos para Ubuntu para gene
 * **Objetivo:** Terminal de Ubuntu con el servidor de desarrollo activo.
 * **Comandos en la terminal de Ubuntu:**
   ```bash
-  cd aiport-ui
+  cd frontend
   npm run dev
   ```
 * **Que evidenciar:** Salida de Vite mostrando `Local: http://localhost:5173/`.
@@ -304,7 +304,7 @@ Este documento contiene la guia paso a paso y los comandos para Ubuntu para gene
 * **Objetivo:** Terminal de Ubuntu con el proyecto Expo iniciado.
 * **Comandos en la terminal de Ubuntu:**
   ```bash
-  cd airport-rn
+  cd movil
   npm start
   ```
 * **Que evidenciar:** Consola de Metro Bundler/Expo mostrando la aplicacion inicializada.
@@ -323,62 +323,86 @@ Este documento contiene la guia paso a paso y los comandos para Ubuntu para gene
 
 ---
 
-# SECCION 6: SISTEMAS OPERATIVOS – UBUNTU (MAQUINA VIRTUAL)
+# SECCION 6: SISTEMAS OPERATIVOS – UBUNTU (MÁQUINA VIRTUAL)
 
 ### Captura 26 – Creacion de Estructura de Directorios
-* **Objetivo:** Crear la estructura de directorios con mkdir y verificarla con tree.
+* **Objetivo:** Crear la carpeta `examen`, dentro `aeropuerto`, y dentro `backend`, `frontend`, `movil`, `docs`. Verificar con `tree`.
 * **Comandos en la terminal de Ubuntu:**
   ```bash
-  mkdir -p examen/{backend,frontend,database,logs}
-  tree examen/
+  mkdir -p examen/aeropuerto/{backend,frontend,movil,docs}
+  cd examen
+  tree aeropuerto
   ```
-* **Que evidenciar:** El arbol de directorios resultante del comando `tree`.
+* **Que evidenciar:** La estructura de árbol mostrando las 4 subcarpetas dentro de `aeropuerto`.
 
 ---
 
 ### Captura 27 – Navegacion y Listado
-* **Objetivo:** Demostrar el uso de cd, pwd y ls -la.
+* **Objetivo:** Entrar a la carpeta `aeropuerto`, verificar ruta actual y listar contenido oculto e información detallada.
 * **Comandos en la terminal de Ubuntu:**
   ```bash
-  cd examen/
+  cd aeropuerto
   pwd
   ls -la
   ```
-* **Que evidenciar:** La ruta de `pwd` (/home/usuario/examen) y el detalle de archivos y permisos en `ls -la`.
+* **Que evidenciar:** El resultado de `pwd` (/home/usuario/examen/aeropuerto) y el listado en formato largo de `ls -la`.
 
 ---
 
-### Captura 28 – Redireccion de Salida
-* **Objetivo:** Usar redirecciones > y >> con comandos basicos.
+### Captura 28 – Creacion de Archivos y Redireccion de Salida
+* **Objetivo:** Crear archivos de evidencia en `docs`, registrar fecha con `date >>`, guardar salida de `who` y `ls -la` usando `>` y `>>`.
 * **Comandos en la terminal de Ubuntu:**
   ```bash
-  echo "--- INICIO DE REPORTE ---" > reporte.txt
-  date >> reporte.txt
-  echo "Sistema comprobado correctamente." >> reporte.txt
-  cat reporte.txt
+  cd docs
+  touch comandos.txt evidencia.txt
+  date >> evidencia.txt
+  cat evidencia.txt
+  who > comandos.txt
+  ls -la >> comandos.txt
+  cat comandos.txt
   ```
-* **Que evidenciar:** El contenido del archivo `reporte.txt` desplegado con `cat`.
+* **Que evidenciar:** La fecha agregada en `evidencia.txt` y la salida combinada de `who` y `ls -la` dentro de `comandos.txt`.
 
 ---
 
-### Captura 29 – Busqueda con grep
-* **Objetivo:** Realizar la busqueda de texto dentro de un archivo.
-* **Comando en la terminal de Ubuntu:**
-  ```bash
-  grep -i "comprobado" reporte.txt
-  ```
-* **Que evidenciar:** La linea con el texto hallado por `grep`.
-
----
-
-### Captura 30 – Permisos y Sticky Bit
-* **Objetivo:** Modificar permisos con chmod y asignar el Sticky Bit a un directorio.
+### Captura 29 – Busqueda con grep y Localización de Archivo
+* **Objetivo:** Escribir un log de servicio en `comandos.txt`, realizar búsquedas con `grep` y `grep -n`, y localizar `README.md` con `find`.
 * **Comandos en la terminal de Ubuntu:**
   ```bash
-  chmod 755 reporte.txt
-  sudo mkdir /tmp/compartido
-  sudo chmod 1777 /tmp/compartido
-  ls -l reporte.txt
-  ls -ld /tmp/compartido
+  cat << 'EOF' > comandos.txt
+  Proyecto Aeropuerto - Backend
+  GET /api/flights/
+  GET /api/flights/9/
+  POST /api/flights/
+  DELETE /api/flights/4/
+  INFO: flight created successfully
+  INFO: flight service running
+  WARN: flight delay detected
+  EOF
+
+  grep "flight" comandos.txt
+  grep -n "flight" comandos.txt
+
+  touch ../backend/README.md
+  cd ..
+  find . -name "README.md"
   ```
-* **Que evidenciar:** Los permisos `-rwxr-xr-x` para `reporte.txt` y `drwxrwxrwt` para `/tmp/compartido`.
+* **Que evidenciar:** El resaltado de la palabra `flight`, la numeración de líneas con `grep -n`, y la ruta de `./backend/README.md` encontrada con `find`.
+
+---
+
+### Captura 30 – Copiar, Mover, Permisos y Sticky Bit
+* **Objetivo:** Copiar y mover respaldos de archivos, y aplicar el Sticky Bit (`1777`) en un directorio compartido.
+* **Comandos en la terminal de Ubuntu:**
+  ```bash
+  cp docs/evidencia.txt docs/evidencia_backup.txt
+  mv docs/evidencia_backup.txt backend/
+  ls -la backend/
+
+  ls -ld docs
+  mkdir shared
+  chmod 1777 shared
+  ls -ld shared
+  ```
+* **Que evidenciar:** El archivo `evidencia_backup.txt` dentro de `backend/` y los permisos `drwxrwxrwt` de la carpeta `shared` mostrando la letra `t` del Sticky Bit.
+

@@ -25,8 +25,13 @@ def oid_or_none(id_str: str):
 @permission_classes([IsAuthenticated])
 def flight_events_list_create(request):
     if request.method == "GET":
-        q = dict(request.query_params)
-        docs = [fix_id(d) for d in col.find(q)]
+        query = {}
+        if "flight_id" in request.query_params:
+            try:
+                query["flight_id"] = int(request.query_params.get("flight_id"))
+            except ValueError:
+                pass
+        docs = [fix_id(d) for d in col.find(query)]
         return Response(docs)
 
     serializer = FlightEventSerializer(data=request.data)
