@@ -9,9 +9,9 @@ Esta guia contiene los comandos para inicializar y ejecutar los 3 componentes de
 ### Paso 1: Configurar la Base de Datos (PostgreSQL)
 ```sql
 CREATE USER backend_user WITH PASSWORD 'admin123';
-CREATE DATABASE airport_db OWNER backend_user;
+CREATE DATABASE bookstore_db OWNER backend_user;
 
-\c airport_db
+\c bookstore_db
 
 ALTER SCHEMA public OWNER TO backend_user;
 GRANT ALL ON SCHEMA public TO backend_user;
@@ -31,13 +31,13 @@ Crear el archivo `backend/.env` con la siguiente configuracion:
 ```env
 DEBUG=1
 SECRET_KEY=dev-secret-key
-DB_NAME=airport_db
+DB_NAME=bookstore_db
 DB_USER=backend_user
 DB_PASSWORD=admin123
 DB_HOST=127.0.0.1
 DB_PORT=5432
 MONGO_URI=mongodb://127.0.0.1:27017
-MONGO_DB=airport_logs
+MONGO_DB=bookstore_logs
 CORS_ORIGIN=http://localhost:5173
 ```
 
