@@ -1,11 +1,11 @@
 ============================================================
 REGISTRO DE EVIDENCIA DE SISTEMA - EXAMEN COMPLEXIVO
-Dominio: Sistema de Gestión Aeroportuaria (Airport System)
+Caso: Sistema Básico de Gestión de Catálogo y Pedidos (Librería Online)
 ============================================================
-Fecha de ejecución: 2026-08-20 17:56:00 UTC
+Fecha de ejecución: 2026-08-20 18:04:00 UTC
 Estado del Servidor Backend: OK (http://127.0.0.1:8000)
-Estado de Base de Datos PostgreSQL: OK (airport_db)
-Estado de Base de Datos MongoDB: OK (airport_logs)
+Estado de Base de Datos PostgreSQL: OK (bookstore_db / librerias_db)
+Estado de Base de Datos MongoDB: OK (bookstore_logs)
 Estado del Frontend React: OK (http://localhost:5173)
 Estado de la App Móvil React Native: OK
 ============================================================

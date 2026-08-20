@@ -1,8 +1,8 @@
-Proyecto Aeropuerto - Backend
-GET /api/flights/
-GET /api/flights/9/
-POST /api/flights/
-DELETE /api/flights/4/
-INFO: flight created successfully
-INFO: flight service running
-WARN: flight delay detected
+Proyecto Librería Online - Backend
+GET /api/orders/
+GET /api/orders/21/
+POST /api/orders/
+DELETE /api/orders/7/
+INFO: order created successfully
+INFO: orders service running
+WARN: order delay detected

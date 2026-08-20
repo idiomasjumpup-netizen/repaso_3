@@ -1,6 +1,7 @@
-# Guia Completa de Evidencias (Capturas 1 a 30) - Examen Complexivo Practico
+# Guía Completa de Evidencias (Capturas 1 a 30) - Examen Complexivo Práctico
+## Dominio: Caso Librería Online (Sistema Básico de Gestión de Catálogo y Pedidos)
 
-Este documento contiene la guia paso a paso y los comandos para Ubuntu para generar las 30 capturas de pantalla requeridas para el examen complexivo practico.
+Este documento contiene la guía paso a paso y los comandos para Ubuntu para generar las 30 capturas de pantalla requeridas para el examen complexivo práctico.
 
 ---
 
@@ -8,57 +9,57 @@ Este documento contiene la guia paso a paso y los comandos para Ubuntu para gene
 > **REGLAS PARA TODAS LAS CAPTURAS:**
 > 1. **Fecha y hora del sistema siempre visible** en el escritorio de Ubuntu.
 > 2. **Captura de pantalla completa** de la ventana de la terminal de Ubuntu, navegador o Postman.
-> 3. **Mantener la numeracion consecutiva** del 1 al 30.
+> 3. **Mantener la numeración consecutiva** del 1 al 30.
 
 ---
 
-# SECCION 1: BASE DE DATOS RELACIONAL (POSTGRESQL)
+# SECCIÓN 1: BASE DE DATOS RELACIONAL (POSTGRESQL)
 
-### Captura 1 – Creacion de Base de Datos
-* **Objetivo:** Mostrar en la terminal de Ubuntu la creacion exitosa de la base de datos `airport_db`.
+### Captura 1 – Creación de Base de Datos
+* **Objetivo:** Mostrar en la terminal de Ubuntu la creación exitosa de la base de datos `bookstore_db` (o `librerias_db`).
 * **Comando a ejecutar en psql:**
   ```sql
-  CREATE DATABASE airport_db;
+  CREATE DATABASE bookstore_db;
   ```
-* **Que evidenciar:** El mensaje `CREATE DATABASE` indicando que la base de datos se creo correctamente.
+* **Qué evidenciar:** El mensaje `CREATE DATABASE` indicando que la base de datos se creó correctamente.
 
 ---
 
-### Captura 2 – Creacion de Usuario y Asignacion de Permisos
-* **Objetivo:** Mostrar los comandos para crear el usuario y concederle privilegios.
+### Captura 2 – Creación de Usuario y Asignación de Permisos
+* **Objetivo:** Mostrar los comandos para crear el usuario `backend_user` (o `librerias_user`) y concederle privilegios mínimos.
 * **Comandos a ejecutar en psql:**
   ```sql
   CREATE USER backend_user WITH PASSWORD 'admin123';
-  GRANT ALL PRIVILEGES ON DATABASE airport_db TO backend_user;
-  \c airport_db
+  GRANT ALL PRIVILEGES ON DATABASE bookstore_db TO backend_user;
+  \c bookstore_db
   ALTER SCHEMA public OWNER TO backend_user;
   GRANT ALL ON SCHEMA public TO backend_user;
   ```
-* **Que evidenciar:** Las salidas `CREATE ROLE`, `GRANT` y `ALTER SCHEMA`.
+* **Qué evidenciar:** Las salidas `CREATE ROLE`, `GRANT` y `ALTER SCHEMA`.
 
 ---
 
-### Captura 3 – Conexion con el Usuario Creado
-* **Objetivo:** Iniciar sesion con el usuario `backend_user` en la BD `airport_db` y listar las bases de datos.
+### Captura 3 – Conexión con el Usuario Creado
+* **Objetivo:** Iniciar sesión con el usuario `backend_user` en la BD `bookstore_db` y listar las bases de datos.
 * **Comando a ejecutar en la terminal de Ubuntu:**
   ```bash
-  psql -U backend_user -d airport_db -h 127.0.0.1
+  psql -U backend_user -d bookstore_db -h 127.0.0.1
   ```
 * **Dentro de psql:**
   ```sql
   \l
   ```
-* **Que evidenciar:** El prompt de la terminal mostrando `airport_db=>` y el listado de bases de datos donde figure `airport_db` asignada a `backend_user`.
+* **Qué evidenciar:** El prompt de la terminal mostrando `bookstore_db=>` y el listado de bases de datos.
 
 ---
 
-### Captura 4 – Tablas Generadas por Migracion
+### Captura 4 – Tablas Generadas por Migración
 * **Objetivo:** Mostrar el listado de tablas creadas tras ejecutar las migraciones de Django.
 * **Comando a ejecutar en psql:**
   ```sql
   \dt
   ```
-* **Que evidenciar:** El listado de tablas creadas (`gestion_gate`, `gestion_flight`, `django_migrations`).
+* **Qué evidenciar:** El listado de tablas creadas (`books`, `orders`, `django_migrations`).
 
 ---
 
@@ -66,292 +67,269 @@ Este documento contiene la guia paso a paso y los comandos para Ubuntu para gene
 * **Objetivo:** Mostrar la estructura detallada y tipos de datos de las dos tablas principales.
 * **Comandos a ejecutar en psql:**
   ```sql
-  \d gestion_gate
-  \d gestion_flight
+  \d books
+  \d orders
   ```
-* **Que evidenciar:** Las columnas, tipos de datos (`character varying`, `boolean`, `timestamp with time zone`, `integer`), claves primarias y foraneas.
+* **Qué evidenciar:** Las columnas, tipos de datos (`character varying`, `boolean`, `integer`, `timestamp with time zone`), PK y FK (`book_id`).
 
 ---
 
-### Captura 6 – Creacion de Indice
-* **Objetivo:** Mostrar la creacion de un indice b-tree y su verificacion.
+### Captura 6 – Creación de Índice
+* **Objetivo:** Mostrar la creación de un índice b-tree en `orders(status)` y su verificación con `EXPLAIN`.
 * **Comandos a ejecutar en psql:**
   ```sql
-  CREATE INDEX idx_flight_number ON gestion_flight(flight_number);
-  \d gestion_flight
+  CREATE INDEX idx_order_status ON orders(status);
+  EXPLAIN SELECT * FROM orders WHERE status = 'RECEIVED';
   ```
-* **Que evidenciar:** La respuesta `CREATE INDEX` y en la seccion Indexes de `\d gestion_flight` la presencia de `idx_flight_number`.
+* **Qué evidenciar:** La respuesta `CREATE INDEX` y el plan de ejecución `EXPLAIN`.
 
 ---
 
-### Captura 7 – Creacion de Vista
-* **Objetivo:** Mostrar el comando de creacion de una vista SQL y una consulta SELECT ejecutada sobre ella.
+### Captura 7 – Creación de Vista
+* **Objetivo:** Mostrar la creación de la vista `vw_pending_orders` (pedidos en `RECEIVED` o `PACKING`) y una consulta SELECT.
 * **Comandos a ejecutar en psql:**
   ```sql
-  CREATE VIEW vista_vuelos_puertas AS
-  SELECT 
-      f.id AS vuelo_id,
-      f.flight_number,
-      f.destination,
-      f.status,
-      g.code AS puerta_codigo,
-      g.terminal
-  FROM gestion_flight f
-  JOIN gestion_gate g ON f.gate_id = g.id;
+  CREATE VIEW vw_pending_orders AS
+  SELECT o.id AS order_id, o.customer_name, o.status, o.order_time, b.title AS book_title, b.isbn
+  FROM orders o
+  JOIN books b ON o.book_id = b.id
+  WHERE o.status IN ('RECEIVED', 'PACKING');
 
-  SELECT * FROM vista_vuelos_puertas;
+  SELECT * FROM vw_pending_orders;
   ```
-* **Que evidenciar:** El mensaje `CREATE VIEW` y la tabla resultante del `SELECT * FROM vista_vuelos_puertas;`.
+* **Qué evidenciar:** El mensaje `CREATE VIEW` y el resultado de la consulta.
 
 ---
 
-### Captura 8 – Funcion o Trigger
-* **Objetivo:** Crear una funcion y trigger en PostgreSQL e insertar un registro para probar su funcionamiento.
+### Captura 8 – Función o Trigger
+* **Objetivo:** Crear y probar una función SQL para contar pedidos por estado.
 * **Comandos a ejecutar en psql:**
   ```sql
-  CREATE OR REPLACE FUNCTION auditar_vuelo()
-  RETURNS TRIGGER AS $$
-  BEGIN
-      RAISE NOTICE 'Nuevo vuelo registrado: % con destino a %', NEW.flight_number, NEW.destination;
-      RETURN NEW;
-  END;
-  $$ LANGUAGE plpgsql;
+  CREATE OR REPLACE FUNCTION fn_total_orders_by_status(p_status VARCHAR)
+  RETURNS BIGINT AS $$
+      SELECT COUNT(*) FROM orders WHERE status = p_status;
+  $$ LANGUAGE sql;
 
-  CREATE TRIGGER trg_auditar_vuelo
-  AFTER INSERT ON gestion_flight
-  FOR EACH ROW
-  EXECUTE FUNCTION auditar_vuelo();
-
-  INSERT INTO gestion_gate (code, terminal, is_available, created_at) 
-  VALUES ('G-99', 'T1', true, NOW());
-
-  INSERT INTO gestion_flight (gate_id, flight_number, destination, status, created_at) 
-  VALUES (1, 'AV-500', 'Quito', 'agendado', NOW());
+  SELECT fn_total_orders_by_status('RECEIVED') AS total_recibidos;
   ```
-* **Que evidenciar:** Las salidas `CREATE FUNCTION`, `CREATE TRIGGER` y el mensaje de `NOTICE: Nuevo vuelo registrado: AV-500 con destino a Quito`.
+* **Qué evidenciar:** La salida `CREATE FUNCTION` y el valor numérico de la consulta.
 
 ---
 
-# SECCION 2: BASE DE DATOS NO RELACIONAL (MONGODB)
+# SECCIÓN 2: BASE DE DATOS NO RELACIONAL (MONGODB)
 
-### Captura 9 – Creacion y Seleccion de Base de Datos
-* **Objetivo:** Iniciar mongosh en Ubuntu y seleccionar la base de datos `airport_logs`.
-* **Comando en la terminal de Ubuntu:**
+### Captura 9 – Creación y Selección de Base de Datos
+* **Objetivo:** Iniciar `mongosh` en Ubuntu y seleccionar la BD `bookstore_logs`.
+* **Comandos:**
   ```bash
   mongosh
+  use bookstore_logs
   ```
-* **Dentro de mongosh:**
-  ```javascript
-  use airport_logs
-  ```
-* **Que evidenciar:** El prompt indicando `switched to db airport_logs`.
+* **Qué evidenciar:** `switched to db bookstore_logs`.
 
 ---
 
-### Captura 10 – Creacion de Usuario
-* **Objetivo:** Crear un usuario en MongoDB con roles de lectura y escritura.
-* **Comando a ejecutar en mongosh:**
+### Captura 10 – Creación de Usuario
+* **Objetivo:** Crear `mongo_backend_user` con contraseña `exa_2026_ute` y roles de lectura/escritura.
+* **Comando:**
   ```javascript
   db.createUser({
-    user: "mongo_admin",
-    pwd: "adminpassword",
-    roles: [ { role: "readWrite", db: "airport_logs" } ]
+    user: "mongo_backend_user",
+    pwd: "exa_2026_ute",
+    roles: [ { role: "readWrite", db: "bookstore_logs" } ]
   })
   ```
-* **Que evidenciar:** La respuesta `{ ok: 1 }` confirmando la creacion del usuario.
+* **Qué evidenciar:** `{ ok: 1 }`.
 
 ---
 
-### Captura 11 – Creacion o Verificacion de Colecciones
-* **Objetivo:** Mostrar las colecciones e insertar un documento de prueba.
-* **Comandos a ejecutar en mongosh:**
+### Captura 11 – Creación o Verificación de Colecciones
+* **Objetivo:** Mostrar colecciones `publishers` y `shipping_labels` con inserción de prueba.
+* **Comandos:**
   ```javascript
-  db.flight_events.insertOne({
-    flight_id: 1,
-    flight_number: "AV-500",
-    event_type: "Embarque Iniciado",
-    details: "Pasajeros abordando en puerta G-99",
-    created_at: new Date()
-  })
+  db.createCollection("publishers")
+  db.createCollection("shipping_labels")
+  db.publishers.insertOne({ name: "Editorial Planeta", code: "PLA", country: "Ecuador", is_active: true, created_at: new Date() })
   show collections
   ```
-* **Que evidenciar:** La respuesta de insercion `{ acknowledged: true, insertedId: ObjectId(...) }` y la coleccion `flight_events` en la lista.
+* **Qué evidenciar:** Confirmación de inserción y listado de colecciones.
 
 ---
 
-### Captura 12 – Creacion de Indice
-* **Objetivo:** Crear un indice en la coleccion NoSQL y verificar su existencia.
-* **Comandos a ejecutar en mongosh:**
+### Captura 12 – Creación de Índice
+* **Objetivo:** Crear un índice en `shipping_labels(order_id)` y evidenciar con `getIndexes()`.
+* **Comandos:**
   ```javascript
-  db.flight_events.createIndex({ flight_id: 1 })
-  db.flight_events.getIndexes()
+  db.shipping_labels.createIndex({ order_id: 1 })
+  db.shipping_labels.getIndexes()
   ```
-* **Que evidenciar:** El mensaje con el nombre del indice creado (`flight_id_1`) y el arreglo devuelto por `getIndexes()`.
+* **Qué evidenciar:** El índice `order_id_1` en el arreglo devuelto.
 
 ---
 
 ### Captura 13 – Consulta por Identificador
-* **Objetivo:** Ejecutar una consulta filtrando por el identificador `flight_id`.
-* **Comando a ejecutar en mongosh:**
+* **Objetivo:** Filtrar guías de envío por el identificador de pedido SQL `order_id`.
+* **Comando:**
   ```javascript
-  db.flight_events.find({ flight_id: 1 })
+  db.shipping_labels.find({ order_id: 1 })
   ```
-* **Que evidenciar:** El documento JSON retornado con sus campos `_id`, `flight_id: 1`, `event_type`, etc.
+* **Qué evidenciar:** El documento devuelto con el campo `order_id: 1`.
 
 ---
 
 ### Captura 14 – Consulta por Rango de Fechas
-* **Objetivo:** Filtrar documentos utilizando operadores de fecha en mongosh.
-* **Comando a ejecutar en mongosh:**
+* **Objetivo:** Filtrar guías por el campo de fecha `created_at`.
+* **Comando:**
   ```javascript
-  db.flight_events.find({
+  db.shipping_labels.find({
     created_at: {
       $gte: ISODate("2026-01-01T00:00:00Z"),
       $lte: ISODate("2026-12-31T23:59:59Z")
     }
   })
   ```
-* **Que evidenciar:** Los documentos que coincidan dentro del rango de fechas especificado.
+* **Qué evidenciar:** Documentos que coincidan dentro del rango de fechas.
 
 ---
 
-# SECCION 3: BACKEND – DJANGO REST
+# SECCIÓN 3: BACKEND – DJANGO REST
 
-### Captura 15 – Creacion del Proyecto y Aplicacion
-* **Objetivo:** Mostrar en la terminal de Ubuntu la estructura de directorios del proyecto Django (`backend`) y la app (`gestion`).
-* **Comandos en la terminal de Ubuntu:**
+### Captura 15 – Creación del Proyecto y Aplicación
+* **Objetivo:** Mostrar la estructura del proyecto Django `backend` y la app `gestion`.
+* **Comandos:**
   ```bash
   cd backend
   tree -L 2 .
   ls -la gestion/
   ```
-* **Que evidenciar:** La estructura de directorios con `manage.py`, `config/` y `gestion/`.
+* **Qué evidenciar:** La estructura de directorios con `manage.py`, `config/` y `gestion/`.
 
 ---
 
 ### Captura 16 – Migraciones Ejecutadas
-* **Objetivo:** Mostrar la ejecucion de makemigrations y migrate en Ubuntu.
-* **Comandos en la terminal de Ubuntu:**
+* **Objetivo:** Mostrar ejecución de makemigrations y migrate.
+* **Comandos:**
   ```bash
   python3 manage.py makemigrations
   python3 manage.py migrate
   ```
-* **Que evidenciar:** Las salidas de Django `Migrations for 'gestion':` o `No changes detected` seguidas de `Applying gestion.0001_initial... OK`.
+* **Qué evidenciar:** La salida `Applying gestion.0001_initial... OK`.
 
 ---
 
-### Captura 17 – Servidor en Ejecucion
-* **Objetivo:** Servidor backend levantado corriendo en Ubuntu.
-* **Comando en la terminal de Ubuntu:**
+### Captura 17 – Servidor en Ejecución
+* **Objetivo:** Servidor backend activo en puerto 8000.
+* **Comando:**
   ```bash
   python3 manage.py runserver 0.0.0.0:8000
   ```
-* **Que evidenciar:** La salida indicando `Starting development server at http://0.0.0.0:8000/`.
+* **Qué evidenciar:** `Starting development server at http://0.0.0.0:8000/`.
 
 ---
 
 ### Captura 18 – Endpoint GET Funcional
-* **Objetivo:** Realizar una solicitud GET al endpoint de la API y mostrar la respuesta HTTP 200 OK.
-* **URL:** `http://127.0.0.1:8000/api/flights/`
-* **Que evidenciar:** Postman o navegador en Ubuntu mostrando el codigo de estado `200 OK` y el JSON retornado.
+* **Objetivo:** GET al endpoint `/api/orders/` o `/api/books/`.
+* **URL:** `http://127.0.0.1:8000/api/orders/`
+* **Qué evidenciar:** Respuesta HTTP 200 OK con JSON.
 
 ---
 
-### Captura 19 – Endpoint POST Funcional
-* **Objetivo:** Insertar un nuevo registro enviando un JSON en el cuerpo de la peticion.
-* **URL:** `http://127.0.0.1:8000/api/gates/` (Metodo `POST`)
+### Captura 19 – Endpoint POST Funcional (Con Integración NoSQL)
+* **Objetivo:** Crear un nuevo pedido vía POST en SQL y evidenciar la generación automática de la guía NoSQL en Mongo.
+* **URL:** `http://127.0.0.1:8000/api/orders/` (POST)
 * **Body (JSON):**
   ```json
   {
-    "code": "G-200",
-    "terminal": "Terminal Internacional",
-    "is_available": true
+    "book": 1,
+    "customer_name": "Juan Pérez",
+    "status": "RECEIVED",
+    "order_time": "2026-08-20T18:00:00Z"
   }
   ```
-* **Que evidenciar:** Respuesta de Postman mostrando `201 Created` y el objeto creado con su `id`.
+* **Qué evidenciar:** Estado `201 Created` y el objeto registrado.
 
 ---
 
-# SECCION 4: FRONTEND – REACTJS
+# SECCIÓN 4: FRONTEND – REACTJS
 
-### Captura 20 – Proyecto React en Ejecucion
-* **Objetivo:** Terminal de Ubuntu con el servidor de desarrollo activo.
-* **Comandos en la terminal de Ubuntu:**
+### Captura 20 – Proyecto React en Ejecución
+* **Objetivo:** Terminal de Ubuntu con servidor de desarrollo activo.
+* **Comandos:**
   ```bash
   cd frontend
   npm run dev
   ```
-* **Que evidenciar:** Salida de Vite mostrando `Local: http://localhost:5173/`.
+* **Qué evidenciar:** `Local: http://localhost:5173/`.
 
 ---
 
 ### Captura 21 – Listado de Registros
-* **Objetivo:** Mostrar la interfaz web en el navegador de Ubuntu consumiendo la API backend.
-* **URL en el navegador:** `http://localhost:5173/`
-* **Que evidenciar:** La pagina web con la lista de datos consumidos desde Django.
+* **Objetivo:** Interfaz web en navegador consumiendo GET `/api/books/` y `/api/orders/`.
+* **URL:** `http://localhost:5173/`
+* **Qué evidenciar:** La lista de libros y pedidos consumidos desde Django.
 
 ---
 
 ### Captura 22 – Registro Nuevo Desde la Interfaz
-* **Objetivo:** Crear un nuevo registro desde el formulario web y verificar su aparicion en la lista.
-* **Que evidenciar:** El formulario con datos completados y la lista actualizada con el nuevo registro.
+* **Objetivo:** Crear un nuevo pedido desde la web y actualizar el listado.
+* **Qué evidenciar:** Formulario completado y tabla con el registro actualizado.
 
 ---
 
-# SECCION 5: APLICACION MOVIL – REACT NATIVE
+# SECCIÓN 5: APLICACIÓN MÓVIL – REACT NATIVE
 
-### Captura 23 – Proyecto Movil Creado
-* **Objetivo:** Terminal de Ubuntu con el proyecto Expo iniciado.
-* **Comandos en la terminal de Ubuntu:**
+### Captura 23 – Proyecto Móvil Creado
+* **Objetivo:** Terminal con Expo activo en la carpeta `movil`.
+* **Comandos:**
   ```bash
   cd movil
   npm start
   ```
-* **Que evidenciar:** Consola de Metro Bundler/Expo mostrando la aplicacion inicializada.
+* **Qué evidenciar:** Metro Bundler / Expo inicializado.
 
 ---
 
-### Captura 24 – Aplicacion Ejecutandose
-* **Objetivo:** Pantalla principal de la aplicacion movil en ejecucion.
-* **Que evidenciar:** La interfaz de la aplicacion movil renderizada en pantalla.
+### Captura 24 – Aplicación Ejecutándose
+* **Objetivo:** Pantalla principal de la app móvil renderizada.
+* **Qué evidenciar:** Interfaz de la app en emulador o dispositivo.
 
 ---
 
 ### Captura 25 – Consumo de API NoSQL
-* **Objetivo:** Mostrar la pantalla de la app movil consumiendo los datos provenientes de MongoDB.
-* **Que evidenciar:** Lista de eventos de vuelos (`flight_events`) visible en la aplicacion movil.
+* **Objetivo:** Mostrar la lista de editoriales (`publishers`) y guías de envío (`shipping_labels`) desde MongoDB.
+* **Qué evidenciar:** Datos NoSQL visibles en las listas de la app móvil.
 
 ---
 
-# SECCION 6: SISTEMAS OPERATIVOS – UBUNTU (MÁQUINA VIRTUAL)
+# SECCIÓN 6: SISTEMAS OPERATIVOS – UBUNTU (MÁQUINA VIRTUAL)
 
-### Captura 26 – Creacion de Estructura de Directorios
-* **Objetivo:** Crear la carpeta `examen`, dentro `aeropuerto`, y dentro `backend`, `frontend`, `movil`, `docs`. Verificar con `tree`.
-* **Comandos en la terminal de Ubuntu:**
+### Captura 26 – Creación de Estructura de Directorios
+* **Objetivo:** Crear carpeta `examen`, subcarpeta `libreria` y carpetas `backend`, `frontend`, `movil`, `docs`.
+* **Comandos:**
   ```bash
-  mkdir -p examen/aeropuerto/{backend,frontend,movil,docs}
+  mkdir -p examen/libreria/{backend,frontend,movil,docs}
   cd examen
-  tree aeropuerto
+  tree libreria
   ```
-* **Que evidenciar:** La estructura de árbol mostrando las 4 subcarpetas dentro de `aeropuerto`.
+* **Qué evidenciar:** Estructura en árbol con las 4 carpetas dentro de `libreria`.
 
 ---
 
-### Captura 27 – Navegacion y Listado
-* **Objetivo:** Entrar a la carpeta `aeropuerto`, verificar ruta actual y listar contenido oculto e información detallada.
-* **Comandos en la terminal de Ubuntu:**
+### Captura 27 – Navegación y Listado
+* **Objetivo:** Entrar a `libreria`, verificar ruta con `pwd` y listar detalles con `ls -la`.
+* **Comandos:**
   ```bash
-  cd aeropuerto
+  cd libreria
   pwd
   ls -la
   ```
-* **Que evidenciar:** El resultado de `pwd` (/home/usuario/examen/aeropuerto) y el listado en formato largo de `ls -la`.
+* **Qué evidenciar:** Ruta `/home/usuario/examen/libreria` y listado de `ls -la`.
 
 ---
 
-### Captura 28 – Creacion de Archivos y Redireccion de Salida
-* **Objetivo:** Crear archivos de evidencia en `docs`, registrar fecha con `date >>`, guardar salida de `who` y `ls -la` usando `>` y `>>`.
-* **Comandos en la terminal de Ubuntu:**
+### Captura 28 – Creación de Archivos y Redirección de Salida
+* **Objetivo:** Crear `comandos.txt` y `evidencia.txt` en `docs`, registrar fecha con `date >>`, guardar `who` y `ls -la` con `>` y `>>`.
+* **Comandos:**
   ```bash
   cd docs
   touch comandos.txt evidencia.txt
@@ -361,39 +339,39 @@ Este documento contiene la guia paso a paso y los comandos para Ubuntu para gene
   ls -la >> comandos.txt
   cat comandos.txt
   ```
-* **Que evidenciar:** La fecha agregada en `evidencia.txt` y la salida combinada de `who` y `ls -la` dentro de `comandos.txt`.
+* **Qué evidenciar:** Fecha en `evidencia.txt` y contenido de `comandos.txt`.
 
 ---
 
-### Captura 29 – Busqueda con grep y Localización de Archivo
-* **Objetivo:** Escribir un log de servicio en `comandos.txt`, realizar búsquedas con `grep` y `grep -n`, y localizar `README.md` con `find`.
-* **Comandos en la terminal de Ubuntu:**
+### Captura 29 – Búsqueda con grep y Localización de Archivo
+* **Objetivo:** Escribir el log del servicio en `comandos.txt`, buscar la palabra `order` con `grep` y `grep -n`, y localizar `README.md` con `find`.
+* **Comandos:**
   ```bash
   cat << 'EOF' > comandos.txt
-  Proyecto Aeropuerto - Backend
-  GET /api/flights/
-  GET /api/flights/9/
-  POST /api/flights/
-  DELETE /api/flights/4/
-  INFO: flight created successfully
-  INFO: flight service running
-  WARN: flight delay detected
+  Proyecto Librería Online - Backend
+  GET /api/orders/
+  GET /api/orders/21/
+  POST /api/orders/
+  DELETE /api/orders/7/
+  INFO: order created successfully
+  INFO: orders service running
+  WARN: order delay detected
   EOF
 
-  grep "flight" comandos.txt
-  grep -n "flight" comandos.txt
+  grep "order" comandos.txt
+  grep -n "order" comandos.txt
 
   touch ../backend/README.md
   cd ..
   find . -name "README.md"
   ```
-* **Que evidenciar:** El resaltado de la palabra `flight`, la numeración de líneas con `grep -n`, y la ruta de `./backend/README.md` encontrada con `find`.
+* **Qué evidenciar:** Resaltado de `order`, números de línea con `grep -n` y ruta `./backend/README.md` con `find`.
 
 ---
 
 ### Captura 30 – Copiar, Mover, Permisos y Sticky Bit
-* **Objetivo:** Copiar y mover respaldos de archivos, y aplicar el Sticky Bit (`1777`) en un directorio compartido.
-* **Comandos en la terminal de Ubuntu:**
+* **Objetivo:** Copiar y mover respaldos de evidencia, y aplicar el Sticky Bit (`1777`) a la carpeta `shared`.
+* **Comandos:**
   ```bash
   cp docs/evidencia.txt docs/evidencia_backup.txt
   mv docs/evidencia_backup.txt backend/
@@ -404,5 +382,4 @@ Este documento contiene la guia paso a paso y los comandos para Ubuntu para gene
   chmod 1777 shared
   ls -ld shared
   ```
-* **Que evidenciar:** El archivo `evidencia_backup.txt` dentro de `backend/` y los permisos `drwxrwxrwt` de la carpeta `shared` mostrando la letra `t` del Sticky Bit.
-
+* **Qué evidenciar:** `evidencia_backup.txt` en `backend/` y los permisos `drwxrwxrwt` para `shared`.

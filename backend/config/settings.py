@@ -67,7 +67,7 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": DB_ENGINE,
-            "NAME": os.getenv("DB_NAME", "bakery_db"),
+            "NAME": os.getenv("DB_NAME", "bookstore_db"),
             "USER": os.getenv("DB_USER", "backend_user"),
             "PASSWORD": os.getenv("DB_PASSWORD", "admin123"),
             "HOST": os.getenv("DB_HOST", "127.0.0.1"),
@@ -116,4 +116,4 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # Mongo settings
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://127.0.0.1:27017")
-MONGO_DB = os.getenv("MONGO_DB", "bakery_logs")
+MONGO_DB = os.getenv("MONGO_DB", "bookstore_logs")

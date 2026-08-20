@@ -1,34 +1,38 @@
 from django.db import models
 
-
-class Gate(models.Model):
-    code = models.CharField(max_length=120, unique=True)
-    terminal = models.CharField(max_length=120)
+class Book(models.Model):
+    isbn = models.CharField(max_length=20, unique=True)
+    title = models.CharField(max_length=150)
+    stock = models.IntegerField(default=0)
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        db_table = "books"
+
     def __str__(self):
-        return f"{self.code} {self.terminal} {self.is_available} {self.created_at} "
+        return f"{self.isbn} - {self.title}"
 
-class Flight(models.Model):
-    gate = models.ForeignKey(Gate, on_delete=models.PROTECT, related_name="flights")
-    flight_number = models.CharField(max_length=120)
-    destination = models.CharField(max_length=120)
+class Order(models.Model):
     class Status(models.TextChoices):
-        SCHEDULED = "agendado", "Agendado"
-        BOARDING = "a_bordo", "A bordo"
-        DEPARTED = "despegado", "Despegado"
-        DELAYED = "retrasado", "Retrasado"
-        CANCELLED = "cancelado", "Cancelado"
+        RECEIVED = "RECEIVED", "Recibido"
+        PACKING = "PACKING", "Empacando"
+        SHIPPED = "SHIPPED", "Enviado"
+        DELIVERED = "DELIVERED", "Entregado"
+        CANCELLED = "CANCELLED", "Cancelado"
 
+    book = models.ForeignKey(Book, on_delete=models.PROTECT, related_name="orders")
+    customer_name = models.CharField(max_length=100)
     status = models.CharField(
         max_length=20,
         choices=Status.choices,
-        default=Status.SCHEDULED
+        default=Status.RECEIVED
     )
-
+    order_time = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.gate.code} {self.flight_number} {self.destination}{self.status} {self.created_at}"
+    class Meta:
+        db_table = "orders"
 
+    def __str__(self):
+        return f"Pedido {self.id} - {self.customer_name} ({self.status})"
